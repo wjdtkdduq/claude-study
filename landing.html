@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계산기 어플 — 깔끔하고 빠른 계산기</title>
+  <style>
+    :root {
+      --grad: linear-gradient(135deg, #5b40ff 0%, #7c5cff 100%);
+      --bg-card: rgba(16, 16, 26, 0.95);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0f;
+      color: rgba(255, 255, 255, 0.88);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(91, 64, 255, 0.1) 0%, transparent 70%);
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(91, 64, 255, 0.06) 0%, transparent 70%);
+      bottom: 10%;
+      right: 10%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 18px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 10, 15, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--grad);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(91, 64, 255, 0.4);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover { color: rgba(255, 255, 255, 0.85); }
+
+    .nav-cta {
+      background: var(--grad);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s;
+      text-decoration: none;
+      box-shadow: 0 2px 12px rgba(91, 64, 255, 0.3);
+    }
+
+    .nav-cta:hover {
+      box-shadow: 0 4px 20px rgba(91, 64, 255, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 40px 80px;
+    }
+
+    .hero-inner {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(91, 64, 255, 0.1);
+      border: 1px solid rgba(91, 64, 255, 0.2);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(139, 114, 255, 0.9);
+      letter-spacing: 0.2px;
+      margin-bottom: 32px;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: #5b40ff;
+      border-radius: 50%;
+      box-shadow: 0 0 6px rgba(91, 64, 255, 0.8);
+    }
+
+    .hero-app-icon {
+      width: 90px;
+      height: 90px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 36px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      position: relative;
+    }
+
+    .hero-app-icon::before {
+      content: '';
+      position: absolute;
+      width: 60px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(91, 64, 255, 0.8), transparent);
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .hero h1 {
+      font-size: 58px;
+      font-weight: 600;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #7c5cff 0%, #a78fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      letter-spacing: -0.2px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 52px;
+    }
+
+    .btn-primary {
+      background: var(--grad);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(91, 64, 255, 0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 6px 28px rgba(91, 64, 255, 0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-ghost {
+      background: rgba(255, 255, 255, 0.04);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 15px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .tag-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .tag-dot--green   { background: #34c759; }
+    .tag-dot--purple  { background: #5b40ff; }
+    .tag-dot--orange  { background: #ff9f0a; }
+    .tag-dot--lavender{ background: #a78fff; }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      margin: 0 40px;
+    }
+
+    .features {
+      padding: 100px 0;
+    }
+
+    .section-label {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(91, 64, 255, 0.8);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 38px;
+      font-weight: 600;
+      letter-spacing: -1.2px;
+      line-height: 1.2;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 14px;
+    }
+
+    .section-desc {
+      text-align: center;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.4);
+      margin: 0 auto 60px;
+      max-width: 480px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.02),
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(91, 64, 255, 0.6), transparent);
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .feature-card:hover {
+      border-color: rgba(91, 64, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(91, 64, 255, 0.12);
+      border: 1px solid rgba(91, 64, 255, 0.2);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .feature-title {
+      font-size: 17px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      color: rgba(255, 255, 255, 0.88);
+      margin-bottom: 10px;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.7;
+    }
+
+    .preview {
+      padding: 100px 0;
+    }
+
+    .preview-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .preview-text p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.45);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+
+    .preview-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .preview-list li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .preview-check {
+      width: 20px;
+      height: 20px;
+      background: var(--grad);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(91, 64, 255, 0.4);
+    }
+
+    .calc-preview {
+      background: var(--bg-card);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 20px;
+      padding: 20px;
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.03),
+        0 32px 80px rgba(0, 0, 0, 0.6),
+        0 8px 24px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    .calc-preview::before {
+      content: '';
+      position: absolute;
+      width: 100px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(91, 64, 255, 0.7), transparent);
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .calc-display {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      text-align: right;
+    }
+
+    .calc-expr {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.25);
+      letter-spacing: 0.5px;
+      min-height: 16px;
+      margin-bottom: 6px;
+    }
+
+    .calc-result {
+      font-size: 32px;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: -1px;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .calc-btn {
+      height: 52px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calc-btn.num {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .calc-btn.op {
+      background: rgba(91, 64, 255, 0.12);
+      color: rgba(139, 114, 255, 0.95);
+      border: 1px solid rgba(91, 64, 255, 0.2);
+    }
+
+    .calc-btn.fn {
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 12px;
+    }
+
+    .calc-btn.eq {
+      background: var(--grad);
+      color: #fff;
+      border: 1px solid rgba(91, 64, 255, 0.5);
+      box-shadow: 0 4px 16px rgba(91, 64, 255, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
+      font-size: 18px;
+      font-weight: 300;
+    }
+
+    .calc-btn.span2 { grid-column: span 2; }
+
+    .stats {
+      padding: 80px 0;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .stat-item {
+      background: var(--bg-card);
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 42px;
+      font-weight: 600;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg, #7c5cff 0%, #a78fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .cta-section {
+      padding: 100px 0;
+    }
+
+    .cta-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(91, 64, 255, 0.15);
+      border-radius: 24px;
+      padding: 70px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(91, 64, 255, 0.05),
+        0 32px 80px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(91, 64, 255, 0.15) 0%, transparent 70%);
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .cta-card::after {
+      content: '';
+      position: absolute;
+      width: 160px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(91, 64, 255, 0.7), transparent);
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .cta-card h2 {
+      font-size: 40px;
+      font-weight: 600;
+      letter-spacing: -1.5px;
+      color: rgba(255, 255, 255, 0.92);
+      margin-bottom: 16px;
+      line-height: 1.2;
+      position: relative;
+    }
+
+    .cta-card p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      position: relative;
+    }
+
+    footer {
+      padding: 32px 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .footer-logo-icon {
+      width: 22px;
+      height: 22px;
+      background: var(--grad);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-copy {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: rgba(255, 255, 255, 0.6); }
+
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: 1fr; gap: 12px; }
+      .preview-inner { grid-template-columns: 1fr; gap: 48px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .hero h1 { font-size: 40px; letter-spacing: -1.5px; }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 100px 20px 60px; }
+      .container { padding: 0 20px; }
+      .cta-card { padding: 48px 24px; }
+      .cta-card h2 { font-size: 30px; }
+      footer { flex-direction: column; gap: 16px; text-align: center; }
+      .section-divider { margin: 0 20px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      animation: fadeUp 0.5s ease-out both;
+      animation-delay: var(--delay, 0s);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 재사용 SVG 정의 -->
+  <svg style="display:none">
+    <defs>
+      <symbol id="icon-check" viewBox="0 0 11 11" fill="none">
+        <path d="M2 5.5L4.5 8L9 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- 네비게이션 -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <rect x="2" y="2" width="5" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="2" width="5" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="2" y="7" width="5" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="7" width="5" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="2" y="12" width="5" height="2" rx="1" fill="white" opacity="0.9"/>
+          <rect x="9" y="12" width="5" height="2" rx="1" fill="white" opacity="0.6"/>
+        </svg>
+      </div>
+      계산기 어플
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">기능</a></li>
+      <li><a href="#preview">미리보기</a></li>
+    </ul>
+    <a href="calculator.html" class="nav-cta">지금 시작하기</a>
+  </nav>
+
+  <!-- 히어로 섹션 -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge fade-up">
+        <span class="hero-badge-dot"></span>
+        새로 출시됨 — v1.0
+      </div>
+
+      <div class="hero-app-icon fade-up" style="--delay:.1s">
+        <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+          <rect x="6" y="6" width="14" height="9" rx="3" fill="#5b40ff" opacity="0.9"/>
+          <rect x="26" y="6" width="14" height="9" rx="3" fill="#7c5cff" opacity="0.9"/>
+          <rect x="6" y="19" width="14" height="9" rx="3" fill="#5b40ff" opacity="0.7"/>
+          <rect x="26" y="19" width="14" height="9" rx="3" fill="#7c5cff" opacity="0.7"/>
+          <rect x="6" y="32" width="14" height="8" rx="3" fill="#5b40ff" opacity="0.5"/>
+          <rect x="26" y="32" width="14" height="8" rx="3" fill="white" opacity="0.85"/>
+        </svg>
+      </div>
+
+      <h1 class="fade-up" style="--delay:.2s">
+        더 빠르고<br/><span>깔끔한 계산기</span>
+      </h1>
+
+      <p class="hero-sub fade-up" style="--delay:.3s">
+        복잡한 기능은 빼고, 필요한 것만 남겼습니다.<br/>
+        키보드로 빠르게, 눈에 편한 다크 테마로.
+      </p>
+
+      <div class="hero-buttons fade-up" style="--delay:.4s">
+        <a href="calculator.html" class="btn-primary">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path d="M7.5 1.5L13.5 7.5L7.5 13.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M1.5 7.5H13.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          지금 시작하기
+        </a>
+        <a href="#preview" class="btn-ghost">
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" stroke-width="1.3"/>
+            <circle cx="7.5" cy="7.5" r="2" fill="currentColor"/>
+          </svg>
+          미리보기
+        </a>
+      </div>
+
+      <div class="hero-tags fade-up" style="--delay:.4s">
+        <span class="tag"><span class="tag-dot tag-dot--green"></span>완전 무료</span>
+        <span class="tag"><span class="tag-dot tag-dot--purple"></span>광고 없음</span>
+        <span class="tag"><span class="tag-dot tag-dot--orange"></span>설치 불필요</span>
+        <span class="tag"><span class="tag-dot tag-dot--lavender"></span>키보드 지원</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 기능 섹션 -->
+  <section class="features" id="features">
+    <div class="container">
+      <p class="section-label">기능</p>
+      <h2 class="section-title">필요한 것만, 완벽하게</h2>
+      <p class="section-desc">군더더기 없는 계산기 하나가 생산성을 높입니다.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3 class="feature-title">즉각적인 반응</h3>
+          <p class="feature-desc">버튼을 누르는 순간 결과가 표시됩니다. 지연 없이 빠른 계산 경험을 제공합니다.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⌨️</div>
+          <h3 class="feature-title">키보드 완전 지원</h3>
+          <p class="feature-desc">마우스 없이도 키보드만으로 모든 기능을 사용할 수 있습니다. 숫자, 연산자, Enter 모두 지원.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🌙</div>
+          <h3 class="feature-title">눈이 편한 다크 테마</h3>
+          <p class="feature-desc">어두운 환경에서도 눈에 부담 없는 세심하게 조정된 다크 UI로 설계했습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 미리보기 섹션 -->
+  <section class="preview" id="preview">
+    <div class="container">
+      <div class="preview-inner">
+        <div class="preview-text">
+          <p class="section-label" style="text-align:left">미리보기</p>
+          <h2 class="section-title" style="text-align:left">단순함이<br/>핵심입니다</h2>
+          <p>
+            필요한 기능만 남기고, 나머지는 모두 비워냈습니다.
+            화면을 꽉 채운 버튼 하나하나가 제자리에 있습니다.
+          </p>
+          <ul class="preview-list">
+            <li>
+              <span class="preview-check"><svg width="11" height="11"><use href="#icon-check"/></svg></span>
+              사칙연산 (+, -, ×, ÷)
+            </li>
+            <li>
+              <span class="preview-check"><svg width="11" height="11"><use href="#icon-check"/></svg></span>
+              퍼센트 계산 (%)
+            </li>
+            <li>
+              <span class="preview-check"><svg width="11" height="11"><use href="#icon-check"/></svg></span>
+              음수 전환 (+/-)
+            </li>
+            <li>
+              <span class="preview-check"><svg width="11" height="11"><use href="#icon-check"/></svg></span>
+              연산식 실시간 표시
+            </li>
+            <li>
+              <span class="preview-check"><svg width="11" height="11"><use href="#icon-check"/></svg></span>
+              키보드 단축키 전체 지원
+            </li>
+          </ul>
+        </div>
+
+        <!-- 미니 계산기 -->
+        <div class="calc-preview">
+          <div class="calc-display">
+            <div class="calc-expr">125 × 4 =</div>
+            <div class="calc-result">500</div>
+          </div>
+          <div class="calc-grid">
+            <div class="calc-btn fn">AC</div>
+            <div class="calc-btn fn">+/-</div>
+            <div class="calc-btn fn">%</div>
+            <div class="calc-btn op">÷</div>
+
+            <div class="calc-btn num">7</div>
+            <div class="calc-btn num">8</div>
+            <div class="calc-btn num">9</div>
+            <div class="calc-btn op">×</div>
+
+            <div class="calc-btn num">4</div>
+            <div class="calc-btn num">5</div>
+            <div class="calc-btn num">6</div>
+            <div class="calc-btn op">−</div>
+
+            <div class="calc-btn num">1</div>
+            <div class="calc-btn num">2</div>
+            <div class="calc-btn num">3</div>
+            <div class="calc-btn op">+</div>
+
+            <div class="calc-btn num span2">0</div>
+            <div class="calc-btn num">.</div>
+            <div class="calc-btn eq">=</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- 통계 섹션 -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value">0ms</div>
+          <div class="stat-label">로딩 시간 — 즉시 실행</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">20+</div>
+          <div class="stat-label">키보드 단축키 지원</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">100%</div>
+          <div class="stat-label">무료, 광고 없음</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- CTA 섹션 -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-card">
+        <h2>지금 바로 시작해보세요</h2>
+        <p>설치도, 가입도 필요 없습니다. 버튼 하나로 바로 사용.</p>
+        <div class="cta-buttons">
+          <a href="calculator.html" class="btn-primary">
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+              <path d="M7.5 1.5L13.5 7.5L7.5 13.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M1.5 7.5H13.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+            계산기 열기
+          </a>
+          <a href="todo.html" class="btn-ghost">할 일 목록도 보기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 푸터 -->
+  <footer>
+    <div class="footer-logo">
+      <div class="footer-logo-icon">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect x="1" y="1" width="4" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="7" y="1" width="4" height="3" rx="1" fill="white" opacity="0.9"/>
+          <rect x="1" y="6" width="4" height="5" rx="1" fill="white" opacity="0.6"/>
+          <rect x="7" y="6" width="4" height="5" rx="1" fill="white" opacity="0.6"/>
+        </svg>
+      </div>
+      계산기 어플
+    </div>
+    <span class="footer-copy">© 2026 계산기 어플. 모든 권리 보유.</span>
+    <ul class="footer-links">
+      <li><a href="calculator.html">계산기</a></li>
+      <li><a href="todo.html">할 일</a></li>
+    </ul>
+  </footer>
+
+</body>
+</html>
