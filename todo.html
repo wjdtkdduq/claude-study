@@ -26,7 +26,7 @@
       position: fixed;
       width: 600px;
       height: 600px;
-      background: radial-gradient(circle, rgba(91, 64, 255, 0.1) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.1) 0%, transparent 70%);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -59,7 +59,7 @@
       transform: translateX(-50%);
       width: 120px;
       height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(91, 64, 255, 0.8), transparent);
+      background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.8), transparent);
     }
 
     /* Header */
@@ -89,8 +89,8 @@
     .title-icon {
       width: 28px;
       height: 28px;
-      background: rgba(91, 64, 255, 0.15);
-      border: 1px solid rgba(91, 64, 255, 0.25);
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.25);
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -100,7 +100,7 @@
     .title-icon svg {
       width: 14px;
       height: 14px;
-      stroke: rgba(139, 114, 255, 0.9);
+      stroke: rgba(96, 165, 250, 0.9);
     }
 
     .stats {
@@ -142,8 +142,8 @@
     }
 
     .input-wrap:focus-within {
-      border-color: rgba(91, 64, 255, 0.45);
-      box-shadow: 0 0 0 3px rgba(91, 64, 255, 0.1);
+      border-color: rgba(37, 99, 235, 0.45);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
     }
 
     .input-wrap svg {
@@ -170,9 +170,9 @@
     }
 
     .add-btn {
-      background: rgba(91, 64, 255, 0.15);
-      border: 1px solid rgba(91, 64, 255, 0.25);
-      color: rgba(139, 114, 255, 0.9);
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      color: rgba(96, 165, 250, 0.9);
       border-radius: 8px;
       width: 28px;
       height: 28px;
@@ -185,14 +185,14 @@
     }
 
     .add-btn:hover {
-      background: rgba(91, 64, 255, 0.25);
-      border-color: rgba(91, 64, 255, 0.4);
+      background: rgba(37, 99, 235, 0.25);
+      border-color: rgba(37, 99, 235, 0.4);
     }
 
     .add-btn svg {
       width: 14px;
       height: 14px;
-      stroke: rgba(139, 114, 255, 0.9);
+      stroke: rgba(96, 165, 250, 0.9);
     }
 
     /* Filters */
@@ -224,9 +224,9 @@
     }
 
     .filter-btn.active {
-      background: rgba(91, 64, 255, 0.12);
-      border-color: rgba(91, 64, 255, 0.2);
-      color: rgba(139, 114, 255, 0.9);
+      background: rgba(37, 99, 235, 0.12);
+      border-color: rgba(37, 99, 235, 0.2);
+      color: rgba(96, 165, 250, 0.9);
     }
 
     /* Todo list */
@@ -311,14 +311,14 @@
     }
 
     .checkbox:hover {
-      border-color: rgba(91, 64, 255, 0.5);
-      background: rgba(91, 64, 255, 0.08);
+      border-color: rgba(37, 99, 235, 0.5);
+      background: rgba(37, 99, 235, 0.08);
     }
 
     .checkbox.checked {
-      background: linear-gradient(135deg, #5b40ff, #7c5cff);
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
       border-color: transparent;
-      box-shadow: 0 2px 8px rgba(91, 64, 255, 0.4);
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
     }
 
     .checkbox.checked svg {
@@ -494,7 +494,7 @@
     const doneBadge = document.getElementById('done-badge');
     const footerInfo = document.getElementById('footer-info');
 
-    const PRIORITY_COLORS = ['#5b40ff', '#34c759', '#ff9f0a', '#ff453a'];
+    const PRIORITY_COLORS = ['#2563eb', '#34c759', '#ff9f0a', '#ff453a'];
 
     function save() {
       localStorage.setItem('linear-todos', JSON.stringify(todos));
