@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>축구4 - 콘텐츠 허브</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #071523;
+      --green:    #00d47e;
+      --purple:   #38003c;
+      --card:     rgba(10, 24, 50, 0.97);
+      --border:   rgba(0, 212, 126, 0.18);
+      --text:     #ffffff;
+      --text-sub: rgba(255, 255, 255, 0.48);
+      --r-sm:     8px;
+      --r-lg:     14px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      --font-hand: 'Gaegu', cursive; /* 손글씨 폰트 */
+    }
+
+    body {
+      background-color: var(--bg);
+      /* 잔디 라인 텍스처 */
+      background-image:
+        radial-gradient(ellipse 90% 45% at 50% -2%, rgba(0,212,126,0.09) 0%, transparent 55%),
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,212,126,0.028) 60px);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* PL 퍼플 상단 띠 */
+    .pl-bar {
+      background: var(--purple);
+      height: 5px;
+    }
+
+    /* 히어로 헤더 */
+    .hero {
+      position: relative;
+      text-align: center;
+      padding: 52px 20px 48px;
+      overflow: hidden;
+    }
+
+    /* 배경 축구공 SVG */
+    .hero-ball {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 260px;
+      height: 260px;
+      opacity: 0.055;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      font-family: var(--font-hand);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .hero-title {
+      font-size: 62px;
+      font-weight: 700;
+      font-family: var(--font-hand);
+      letter-spacing: 0;
+      line-height: 1;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .hero-title .accent { color: var(--green); }
+
+    .hero-sub {
+      font-size: 13px;
+      color: var(--text-sub);
+      letter-spacing: 0.06em;
+      position: relative;
+    }
+
+    /* 구분선 */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(0,212,126,0.35) 50%, transparent 100%);
+      margin: 0 24px 32px;
+    }
+
+    /* 카드 그리드 */
+    .grid {
+      max-width: 840px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+    }
+
+    /* 상단 그린 라인 */
+    .card-top-line {
+      height: 3px;
+      background: var(--green);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .card.active .card-top-line { opacity: 1; }
+
+    a.card:hover .card-top-line { opacity: 1; }
+
+    a.card:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 16px 44px rgba(0,0,0,0.55),
+        0 0 30px rgba(0,212,126,0.08);
+      border-color: rgba(0,212,126,0.3);
+    }
+
+    .card.disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+
+    .card-body {
+      padding: 22px 22px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .card-icon {
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      font-family: var(--font-hand);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.7;
+      flex: 1;
+    }
+
+    .card-foot {
+      padding: 11px 22px 16px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      font-size: 9px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .badge-open {
+      background: var(--green);
+      color: var(--bg);
+    }
+
+    .badge-soon {
+      background: rgba(255,255,255,0.07);
+      color: var(--text-sub);
+    }
+
+    .meta {
+      font-size: 11px;
+      color: var(--text-sub);
+    }
+
+    .card-arrow {
+      position: absolute;
+      right: 22px;
+      bottom: 16px;
+      font-size: 13px;
+      color: var(--green);
+      opacity: 0;
+      transform: translateX(-4px);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    a.card:hover .card-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* 하단 장식 */
+    .footer-ball {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 28px;
+      opacity: 0.2;
+      letter-spacing: 12px;
+    }
+
+    @media (max-width: 560px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 44px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="pl-bar"></div>
+
+  <!-- 히어로 헤더 -->
+  <div class="hero">
+    <!-- 배경 축구공 -->
+    <svg class="hero-ball" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="96" fill="white" stroke="#ccc" stroke-width="1"/>
+      <polygon points="100,18 124,48 114,80 86,80 76,48" fill="#0a0a18"/>
+      <polygon points="100,18 76,48 53,36 62,10 100,4" fill="#0a0a18"/>
+      <polygon points="100,18 124,48 147,36 138,10 100,4" fill="#0a0a18"/>
+      <polygon points="76,48 53,36 33,60 44,90 72,92" fill="#0a0a18"/>
+      <polygon points="124,48 147,36 167,60 156,90 128,92" fill="#0a0a18"/>
+      <polygon points="86,80 72,92 76,120 102,130 112,110" fill="#0a0a18"/>
+      <polygon points="114,80 128,92 124,120 98,130 88,110" fill="#0a0a18"/>
+      <polygon points="44,90 33,118 56,138 80,124 76,120 72,92" fill="#0a0a18"/>
+      <polygon points="156,90 167,118 144,138 120,124 124,120 128,92" fill="#0a0a18"/>
+      <polygon points="76,120 56,138 72,162 102,162 112,140 102,130" fill="#0a0a18"/>
+      <polygon points="124,120 144,138 128,162 98,162 88,140 98,130" fill="#0a0a18"/>
+    </svg>
+
+    <p class="hero-eyebrow">⚽ Premier Football Quiz</p>
+    <h1 class="hero-title">축구<span class="accent">4</span></h1>
+    <p class="hero-sub">축구 덕후를 위한 콘텐츠 플랫폼</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 카드 그리드 -->
+  <div class="grid">
+
+    <!-- 모의고사 — 활성 -->
+    <a class="card active" href="soccer4-quiz.html">
+      <div class="card-top-line"></div>
+      <div class="card-body">
+        <div class="card-icon">📝</div>
+        <div class="card-title">축구 모의고사</div>
+        <div class="card-desc">
+          사소한 TMI부터 이적료, 귀화, 밈, 명언까지.<br>
+          다양한 주제의 회차별 시리즈.
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="badge badge-open">OPEN</span>
+        <span class="meta">5회 시리즈 · 회차별 20문항</span>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <!-- 이상형 월드컵 — 준비 중 -->
+    <div class="card disabled">
+      <div class="card-top-line"></div>
+      <div class="card-body">
+        <div class="card-icon">🏆</div>
+        <div class="card-title">이상형 월드컵</div>
+        <div class="card-desc">
+          역겨운 선수, 하드웨어 GOAT, 언성 히어로…<br>
+          128강 토너먼트로 최후의 1인을 가린다.
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="badge badge-soon">COMING SOON</span>
+        <span class="meta">10가지 주제 · 128강</span>
+      </div>
+    </div>
+
+    <!-- 베스트 11 — 준비 중 -->
+    <div class="card disabled">
+      <div class="card-top-line"></div>
+      <div class="card-body">
+        <div class="card-icon">👕</div>
+        <div class="card-title">베스트 11</div>
+        <div class="card-desc">
+          대머리, 장발, 유리몸, 패션 테러리스트…<br>
+          독특한 컨셉으로 구성하는 드림팀 스쿼드.
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="badge badge-soon">COMING SOON</span>
+        <span class="meta">10가지 컨셉</span>
+      </div>
+    </div>
+
+    <!-- 이스타 퀴즈쇼 — 준비 중 -->
+    <div class="card disabled">
+      <div class="card-top-line"></div>
+      <div class="card-body">
+        <div class="card-icon">❓</div>
+        <div class="card-title">이스타 퀴즈쇼</div>
+        <div class="card-desc">
+          비주얼·스탯·클럽·텍스트·매니악 5개 카테고리.<br>
+          실루엣, 스무고개, 초성 퀴즈 등 다양한 포맷.
+        </div>
+      </div>
+      <div class="card-foot">
+        <span class="badge badge-soon">COMING SOON</span>
+        <span class="meta">5가지 카테고리</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer-ball">⚽ ⚽ ⚽</div>
+
+</body>
+</html>

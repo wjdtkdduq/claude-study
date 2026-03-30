@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>손흥민이 역겨운 이유</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* 슬라이드 컨테이너 */
+    .slideshow {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* 배경 패턴 */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(91,64,255,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 90% 90%, rgba(91,64,255,0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* 슬라이드 번호 */
+    .slide-number {
+      position: fixed;
+      bottom: 24px;
+      right: 32px;
+      color: rgba(255,255,255,0.25);
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 100;
+    }
+
+    /* 네비게이션 */
+    .nav {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .nav button {
+      background: rgba(91,64,255,0.2);
+      border: 1px solid rgba(91,64,255,0.4);
+      color: #e8e8f0;
+      padding: 10px 24px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav button:hover {
+      background: rgba(91,64,255,0.5);
+      border-color: rgba(91,64,255,0.8);
+    }
+
+    .nav button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* 진행바 */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #5b40ff, #a78bfa);
+      transition: width 0.4s ease;
+      z-index: 100;
+    }
+
+    /* 타이포그래피 */
+    .label {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #5b40ff;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 900;
+      line-height: 1.1;
+      text-align: center;
+      letter-spacing: -1px;
+    }
+
+    h2 {
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: clamp(14px, 2vw, 20px);
+      color: rgba(255,255,255,0.55);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    .accent { color: #5b40ff; }
+    .gold { color: #f59e0b; }
+    .green { color: #34d399; }
+    .red { color: #f87171; }
+
+    /* 카드 */
+    .card {
+      background: rgba(16,16,26,0.95);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 32px 40px;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 16px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .card-grid.col2 { grid-template-columns: 1fr 1fr; }
+    .card-grid.col3 { grid-template-columns: 1fr 1fr 1fr; }
+
+    .stat-card {
+      background: rgba(16,16,26,0.95);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .stat-card .value {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 900;
+      color: #5b40ff;
+      line-height: 1;
+    }
+
+    .stat-card .unit {
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+      margin-top: 6px;
+    }
+
+    /* 리스트 */
+    .reason-list {
+      list-style: none;
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .reason-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      background: rgba(16,16,26,0.95);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
+      padding: 18px 24px;
+      font-size: clamp(14px, 1.8vw, 18px);
+      line-height: 1.5;
+    }
+
+    .reason-list li .num {
+      font-size: 12px;
+      font-weight: 700;
+      color: #5b40ff;
+      background: rgba(91,64,255,0.15);
+      border: 1px solid rgba(91,64,255,0.3);
+      border-radius: 8px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+
+    /* 이모지 큰 것 */
+    .big-emoji {
+      font-size: 80px;
+      margin-bottom: 24px;
+    }
+
+    /* 인용구 */
+    blockquote {
+      font-size: clamp(18px, 2.5vw, 28px);
+      font-style: italic;
+      text-align: center;
+      color: rgba(255,255,255,0.75);
+      max-width: 700px;
+      line-height: 1.6;
+      position: relative;
+      padding: 0 40px;
+    }
+
+    blockquote::before, blockquote::after {
+      content: '"';
+      position: absolute;
+      font-size: 80px;
+      color: rgba(91,64,255,0.3);
+      font-style: normal;
+      line-height: 1;
+    }
+
+    blockquote::before { top: -10px; left: 0; }
+    blockquote::after  { bottom: -40px; right: 0; }
+
+    .quote-author {
+      margin-top: 24px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* 타임라인 */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+      max-width: 750px;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding-bottom: 20px;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 35px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 20px);
+      background: rgba(91,64,255,0.3);
+    }
+
+    .timeline-dot {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(91,64,255,0.2);
+      border: 2px solid rgba(91,64,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .timeline-content .year {
+      font-size: 12px;
+      font-weight: 700;
+      color: #5b40ff;
+      letter-spacing: 1px;
+    }
+
+    .timeline-content .text {
+      font-size: clamp(13px, 1.6vw, 16px);
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+      margin-top: 4px;
+    }
+
+    /* 비교표 */
+    .compare-table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
+
+    .compare-table th {
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .compare-table td {
+      padding: 16px 20px;
+      text-align: center;
+      background: rgba(16,16,26,0.95);
+      border: 1px solid rgba(255,255,255,0.07);
+      font-size: 15px;
+    }
+
+    .compare-table td:first-child { border-radius: 12px 0 0 12px; text-align: left; font-weight: 600; }
+    .compare-table td:last-child  { border-radius: 0 12px 12px 0; }
+
+    /* 타이틀 슬라이드 특별 스타일 */
+    .slide-title h1 { font-size: clamp(42px, 7vw, 88px); }
+
+    /* 반응형 */
+    @media (max-width: 768px) {
+      .slide { padding: 40px 24px; }
+      .card-grid.col2, .card-grid.col3 { grid-template-columns: 1fr; }
+    }
+
+    /* 키보드 힌트 */
+    .key-hint {
+      position: fixed;
+      bottom: 24px;
+      left: 32px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.2);
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="slideshow" id="slideshow">
+
+  <!-- ─────────────── 슬라이드 1: 타이틀 ─────────────── -->
+  <div class="slide slide-title active">
+    <div class="label">경고: 과도한 완벽함 포함</div>
+    <h1>손흥민이<br><span class="accent">역겨운</span> 이유</h1>
+    <p class="subtitle">
+      알면 알수록 더 역겨워지는 이 남자의 진실<br>
+      — 손흥민을 좋아하는 사람을 위한 30분짜리 고통 —
+    </p>
+    <div style="margin-top:48px; display:flex; gap:16px; flex-wrap:wrap; justify-content:center;">
+      <div class="stat-card" style="min-width:140px">
+        <div class="value">30<span style="font-size:20px">분</span></div>
+        <div class="unit">발표 시간</div>
+      </div>
+      <div class="stat-card" style="min-width:140px">
+        <div class="value">∞</div>
+        <div class="unit">역겨움 지수</div>
+      </div>
+      <div class="stat-card" style="min-width:140px">
+        <div class="value">0</div>
+        <div class="unit">변명의 여지</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 2: 목차 ─────────────── -->
+  <div class="slide">
+    <div class="label">오늘의 순서</div>
+    <h2>이것이 오늘의 <span class="accent">역겨움 목록</span></h2>
+    <div class="card-grid col2" style="margin-top:32px; max-width:780px">
+      <div class="card" style="padding:20px 28px">
+        <div style="font-size:13px;color:#5b40ff;font-weight:700;margin-bottom:8px">PART 1</div>
+        <div style="font-size:16px;font-weight:700">그는 대체 누구인가?</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">기본 스펙 소개 (~5분)</div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="font-size:13px;color:#5b40ff;font-weight:700;margin-bottom:8px">PART 2</div>
+        <div style="font-size:16px;font-weight:700">말도 안 되는 성과들</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">통계와 기록 (~7분)</div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="font-size:13px;color:#5b40ff;font-weight:700;margin-bottom:8px">PART 3</div>
+        <div style="font-size:16px;font-weight:700">인성까지 역겨운 이유</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">인격과 인성 (~8분)</div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="font-size:13px;color:#5b40ff;font-weight:700;margin-bottom:8px">PART 4</div>
+        <div style="font-size:16px;font-weight:700">왜 우리는 희망이 없나</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:4px">글로벌 영향력 + 결론 (~10분)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 3: 누구인가 ─────────────── -->
+  <div class="slide">
+    <div class="label">PART 1 — 기본 스펙</div>
+    <h2>손흥민, <span class="accent">이 남자가</span> 누구냐</h2>
+    <div class="card-grid col3" style="margin-top:32px">
+      <div class="stat-card">
+        <div style="font-size:36px;margin-bottom:8px">🇰🇷</div>
+        <div class="value" style="font-size:20px">수원 출신</div>
+        <div class="unit">1992년 7월 8일생</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:36px;margin-bottom:8px">⚽</div>
+        <div class="value" style="font-size:20px">토트넘 홋스퍼</div>
+        <div class="unit">2015년~ 주장</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:36px;margin-bottom:8px">🌍</div>
+        <div class="value" style="font-size:20px">아시아 레전드</div>
+        <div class="unit">EPL 최고 아시아 선수</div>
+      </div>
+    </div>
+    <p class="subtitle" style="margin-top:24px;max-width:700px">
+      함부르크 유스 → 함부르크 1군 → 레버쿠젠 → 토트넘<br>
+      "그냥 축구 좀 잘하는 한국인"이라고 생각했다면... 이 발표가 끝날 때까지 후회하게 될 것입니다.
+    </p>
+  </div>
+
+  <!-- ─────────────── 슬라이드 4: 아버지 손웅정 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #1</div>
+    <h2>아버지가 <span class="accent">손웅정</span>이다</h2>
+    <ul class="reason-list" style="margin-top:28px">
+      <li>
+        <span class="num">#1</span>
+        <span>전 프로축구 선수 아버지가 직접 코치가 되어 어린 시절부터 1:1 맞춤 훈련을 진행했다. 일반인은 돈을 줘도 받을 수 없는 시스템.</span>
+      </li>
+      <li>
+        <span class="num">#2</span>
+        <span>만 12세에 독일 함부르크 유소년팀 입단 — 부모와 떨어져 <strong class="accent">혼자 독일에서</strong> 적응. 평범한 12살이 할 수 있는 일이 아님.</span>
+      </li>
+      <li>
+        <span class="num">#3</span>
+        <span>손웅정 감독은 "화려함보다 기본기"를 강조, 어린 흥민이의 <strong class="accent">양발 능력</strong>을 일찍부터 개발. 이게 훗날 EPL 황금부츠의 씨앗이 됨.</span>
+      </li>
+      <li>
+        <span class="num">#4</span>
+        <span>단순히 운이 좋은 게 아니다. <span class="gold">설계된 천재</span>인데 노력까지 했다는 것이 역겨운 이유.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ─────────────── 슬라이드 5: EPL 황금부츠 ─────────────── -->
+  <div class="slide">
+    <div class="label">PART 2 — 말도 안 되는 성과</div>
+    <h2><span class="gold">2022 EPL 황금부츠</span><br>아시아 선수 최초</h2>
+    <div class="card-grid col2" style="margin-top:32px; max-width:800px">
+      <div class="stat-card">
+        <div class="value">23</div>
+        <div class="unit">2021-22 EPL 득점 (공동 1위)</div>
+      </div>
+      <div class="stat-card">
+        <div class="value gold">1위</div>
+        <div class="unit">아시아 선수 최초 황금부츠</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">살라흐</div>
+        <div class="unit">공동 수상자 (23골)</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">100%</div>
+        <div class="unit">역겨움 달성률</div>
+      </div>
+    </div>
+    <p class="subtitle" style="margin-top:20px">
+      살라흐와 <strong>동률</strong>로 황금부츠를 나눠 가졌다.<br>
+      살라흐와 동등하다는 사실 하나만으로 이미 역겨움 지수 MAX.
+    </p>
+  </div>
+
+  <!-- ─────────────── 슬라이드 6: 숫자들 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #2 — 통계</div>
+    <h2>이 <span class="accent">숫자들</span>을 보십시오</h2>
+    <div class="card-grid col3" style="margin-top:32px">
+      <div class="stat-card">
+        <div class="value">170+</div>
+        <div class="unit">EPL 통산 골 (현재 진행 중)</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">100+</div>
+        <div class="unit">대한민국 국가대표 A매치</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">50+</div>
+        <div class="unit">국가대표 통산 골</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">13+</div>
+        <div class="unit">EPL 활동 시즌</div>
+      </div>
+      <div class="stat-card">
+        <div class="value gold">왼발·오른발</div>
+        <div class="unit">둘 다 수준급 양발 선수</div>
+      </div>
+      <div class="stat-card">
+        <div class="value green">만점</div>
+        <div class="unit">팬 비율 (국내외 통합)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 7: 챔피언스리그 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #3</div>
+    <h2>UCL 결승 진출,<br><span class="accent">그 역겨운 여정</span></h2>
+    <div class="timeline" style="margin-top:28px">
+      <div class="timeline-item">
+        <div class="timeline-dot">🏆</div>
+        <div class="timeline-content">
+          <div class="year">2018-19 UCL 8강</div>
+          <div class="text">맨시티 원정 — 해트트릭으로 8강 진출 확정. 오른팔 골절 부상 중에 출전해 득점. <span class="gold">부상 중에 해트트릭.</span></div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">⚡</div>
+        <div class="timeline-content">
+          <div class="year">2019 UCL 4강</div>
+          <div class="text">아약스 원정 루카스 모우라의 해트트릭에 가려졌지만, 흥민이도 핵심 기여. 구단 역사상 첫 결승 진출.</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot">🌟</div>
+        <div class="timeline-content">
+          <div class="year">2019 UCL 결승</div>
+          <div class="text">리버풀과의 결승에서 페널티킥 득점. 비록 준우승이지만 <span class="accent">아시아 선수 UCL 결승 득점</span>은 역사에 기록.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 8: 군 복무 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #4</div>
+    <h2><span class="red">군대</span>도 <span class="accent">역겨운 사람</span></h2>
+    <div class="big-emoji">🪖</div>
+    <ul class="reason-list">
+      <li>
+        <span class="num">배경</span>
+        <span>한국 남성은 의무 군복무. 축구 선수에게 전성기 2년은 커리어 절반과 같다. 일반인도 힘든 군대를.</span>
+      </li>
+      <li>
+        <span class="num">2018</span>
+        <span>아시안게임 금메달로 <strong class="gold">병역특례</strong> 획득 — 그런데 이마저도 "땀 흘려 싸워서" 얻은 것. 아예 군 복무 자체를 자청해서 신청.</span>
+      </li>
+      <li>
+        <span class="num">결론</span>
+        <span>군복무도 성실하게 이수. 현역 복무 기간에도 꾸준한 체력 관리. 복귀 후 퍼포먼스 <span class="green">전혀 저하 없음</span>. 이게 사람이냐.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ─────────────── 슬라이드 9: 인성 ─────────────── -->
+  <div class="slide">
+    <div class="label">PART 3 — 인성까지 역겨운 이유</div>
+    <h2>실력은 그렇다 쳐도<br><span class="red">인성은 왜 좋아</span></h2>
+    <ul class="reason-list" style="margin-top:28px">
+      <li>
+        <span class="num">팀워크</span>
+        <span>동료 골에 본인 골만큼 기뻐한다. 팬들이 뽑은 "같이 뛰고 싶은 선수 1위". 개인 욕심 없이 팀 플레이를 먼저 생각.</span>
+      </li>
+      <li>
+        <span class="num">팬 사랑</span>
+        <span>경기 후 어린이 팬들에게 항상 사인과 사진. 훈련 끝나고 팬들 기다리는 걸 알면 절대 그냥 안 지나침. <span class="gold">배우 급 외모에 성격까지 이럴 필요는 없다.</span></span>
+      </li>
+      <li>
+        <span class="num">겸손</span>
+        <span>"아직 부족하다"는 말을 10년째 하고 있다. 황금부츠 받은 날도 "팀 덕분"이라고 말함. 본인이 역겨운 걸 모르는 것처럼 행동함.</span>
+      </li>
+      <li>
+        <span class="num">기부</span>
+        <span>개인 기부 및 사회 공헌 지속적으로 이어가고 있음. 화려하게 알리지 않아서 더 역겨움.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ─────────────── 슬라이드 10: 웃음 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #5</div>
+    <h2>저 <span class="accent">웃음</span>은 무슨 무기냐</h2>
+    <blockquote style="margin-top:32px">
+      손흥민이 웃으면 상대 수비수도 흔들린다는 설이 있다.
+      <br>근거: 실제로 자꾸 웃으면서 드리블하다가 골 넣음.
+    </blockquote>
+    <div class="card-grid col2" style="margin-top:40px; max-width:700px">
+      <div class="stat-card">
+        <div class="value">😄</div>
+        <div class="unit">골 세리머니: 항상 웃음</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">😄</div>
+        <div class="unit">실수 후에도: 웃으며 박수</div>
+      </div>
+      <div class="stat-card">
+        <div class="value">😄</div>
+        <div class="unit">인터뷰 중: 계속 웃음</div>
+      </div>
+      <div class="stat-card">
+        <div class="value red">😤</div>
+        <div class="unit">시청자 반응: 짜증 남</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 11: 비교 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #6</div>
+    <h2>다른 선수들과 <span class="accent">비교</span>해보자</h2>
+    <table class="compare-table" style="margin-top:28px">
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>일반 선수</th>
+          <th class="accent">손흥민</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>부상 후 복귀</td>
+          <td>수개월 재활</td>
+          <td class="accent">부상 중에 골 넣음</td>
+        </tr>
+        <tr>
+          <td>국가대표 의무</td>
+          <td>클럽 눈치 봄</td>
+          <td class="accent">항상 100% 출전</td>
+        </tr>
+        <tr>
+          <td>나이 들면</td>
+          <td>퍼포먼스 저하</td>
+          <td class="accent">30대에 황금부츠</td>
+        </tr>
+        <tr>
+          <td>돈 많이 벌면</td>
+          <td>동기부여 감소</td>
+          <td class="accent">그래도 열심히</td>
+        </tr>
+        <tr>
+          <td>유명해지면</td>
+          <td>팬 무시 가능</td>
+          <td class="accent">여전히 팬 챙김</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─────────────── 슬라이드 12: 글로벌 영향력 ─────────────── -->
+  <div class="slide">
+    <div class="label">PART 4 — 글로벌 영향력</div>
+    <h2>한국을 <span class="accent">세계 지도</span>에 올린 남자</h2>
+    <div class="card-grid col3" style="margin-top:28px">
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">🌐</div>
+        <div class="value" style="font-size:18px">SNS 수천만</div>
+        <div class="unit">팔로워 (인스타그램 기준)</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">🎤</div>
+        <div class="value" style="font-size:18px">영어·독어·한국어</div>
+        <div class="unit">3개 국어 능숙</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">🏅</div>
+        <div class="value" style="font-size:18px">대한민국 체육훈장</div>
+        <div class="unit">청룡장 수훈</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">📺</div>
+        <div class="value" style="font-size:18px">EPL 중계</div>
+        <div class="unit">한국 시청률 폭발의 주범</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">🇰🇷</div>
+        <div class="value" style="font-size:18px">국격 상승</div>
+        <div class="unit">외국인이 한국을 좋아하는 이유 중 하나</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px">👦</div>
+        <div class="value" style="font-size:18px">세대 롤모델</div>
+        <div class="unit">한국 청소년 꿈 1위</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 13: 명언 ─────────────── -->
+  <div class="slide">
+    <div class="label">역겨운 이유 #7 — 그가 한 말들</div>
+    <h2>명언도 <span class="accent">역겨운 남자</span></h2>
+    <blockquote style="margin-top:36px; font-size:clamp(16px,2.2vw,24px)">
+      "저는 항상 어제보다 더 나은 오늘을 꿈꿉니다.<br>
+      그게 저를 움직이는 힘이에요."
+    </blockquote>
+    <div class="quote-author" style="margin-top:48px">— 손흥민</div>
+    <p class="subtitle" style="margin-top:32px;max-width:600px">
+      실력도 있고 인성도 있고 명언까지 있다.<br>
+      <span class="red">이건 불공평하다.</span>
+    </p>
+  </div>
+
+  <!-- ─────────────── 슬라이드 14: 역겨움 지수 ─────────────── -->
+  <div class="slide">
+    <div class="label">종합 분석</div>
+    <h2>역겨움 지수 <span class="accent">최종 산출</span></h2>
+    <div style="margin-top:32px; width:100%; max-width:700px; display:flex; flex-direction:column; gap:16px">
+      <div class="card" style="padding:20px 28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:700">실력 (기술·골·어시스트)</span>
+          <span class="accent" style="font-weight:900">99.9 / 100</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden">
+          <div style="width:99.9%;height:100%;background:linear-gradient(90deg,#5b40ff,#a78bfa);border-radius:99px"></div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:700">인성 (팬·동료·겸손)</span>
+          <span class="gold" style="font-weight:900">100 / 100</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden">
+          <div style="width:100%;height:100%;background:linear-gradient(90deg,#f59e0b,#fcd34d);border-radius:99px"></div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:700">외모 (팬 기준)</span>
+          <span class="red" style="font-weight:900">역겹게 잘생김</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden">
+          <div style="width:97%;height:100%;background:linear-gradient(90deg,#f87171,#fca5a5);border-radius:99px"></div>
+        </div>
+      </div>
+      <div class="card" style="padding:20px 28px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <span style="font-weight:700">전체 역겨움 지수</span>
+          <span style="font-weight:900;color:#fff">💀 측정 불가</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden">
+          <div style="width:100%;height:100%;background:linear-gradient(90deg,#5b40ff,#f59e0b,#f87171);border-radius:99px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────── 슬라이드 15: 결론 ─────────────── -->
+  <div class="slide">
+    <div class="label">결론</div>
+    <h2>그래서 손흥민은<br><span class="accent">왜 역겨운가</span></h2>
+    <ul class="reason-list" style="margin-top:24px">
+      <li><span class="num">이유 1</span><span>타고난 재능에 노력까지 했다 — <span class="red">공평하지 않다</span></span></li>
+      <li><span class="num">이유 2</span><span>EPL 황금부츠를 아시아 선수 최초로 받았다 — <span class="red">우리가 못 받을 걸 받았다</span></span></li>
+      <li><span class="num">이유 3</span><span>실력 좋은 건 참겠는데 인성까지 좋다 — <span class="red">말이 안 된다</span></span></li>
+      <li><span class="num">이유 4</span><span>잘생기기까지 했다 — <span class="red">이건 진짜 역겹다</span></span></li>
+      <li><span class="num">이유 5</span><span>한국인이라 미울 수도 없다 — <span class="accent">그래서 더 역겹다</span></span></li>
+    </ul>
+  </div>
+
+  <!-- ─────────────── 슬라이드 16: 마무리 ─────────────── -->
+  <div class="slide">
+    <div class="big-emoji">🙏</div>
+    <div class="label">마무리</div>
+    <h1 style="font-size:clamp(32px,5vw,60px)">
+      손흥민, 우리가<br>
+      <span class="accent">역겨울 정도로</span><br>
+      자랑스럽습니다
+    </h1>
+    <p class="subtitle" style="margin-top:24px; max-width:600px">
+      30분 동안 역겨움을 들어주셔서 감사합니다.<br>
+      앞으로도 더 많이 역겨워지기를 응원합니다.<br><br>
+      <span style="color:rgba(255,255,255,0.3);font-size:13px">← → 키 또는 하단 버튼으로 슬라이드 이동</span>
+    </p>
+    <div class="card-grid col3" style="margin-top:36px; max-width:600px">
+      <div class="stat-card">
+        <div style="font-size:28px">⚽</div>
+        <div class="unit" style="margin-top:8px">더 많은 골을</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:28px">🏆</div>
+        <div class="unit" style="margin-top:8px">더 많은 우승을</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:28px">😄</div>
+        <div class="unit" style="margin-top:8px">더 많은 웃음을</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slideshow -->
+
+<!-- 네비게이션 -->
+<div class="nav">
+  <button id="prevBtn" onclick="changeSlide(-1)" disabled>← 이전</button>
+  <button id="nextBtn" onclick="changeSlide(1)">다음 →</button>
+</div>
+
+<div class="slide-number" id="slideNum"></div>
+<div class="key-hint">← → 키로 이동</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  function updateUI() {
+    // 슬라이드 표시
+    slides.forEach((s, i) => {
+      s.classList.remove('active');
+      if (i === current) {
+        s.style.display = 'flex';
+        // 강제 리플로우 후 애니메이션
+        s.offsetHeight;
+        s.classList.add('active');
+      } else {
+        setTimeout(() => {
+          if (!s.classList.contains('active')) s.style.display = 'none';
+        }, 500);
+      }
+    });
+
+    // 진행바
+    document.getElementById('progressBar').style.width =
+      ((current + 1) / total * 100) + '%';
+
+    // 슬라이드 번호
+    document.getElementById('slideNum').textContent =
+      (current + 1) + ' / ' + total;
+
+    // 버튼 상태
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === total - 1;
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next < 0 || next >= total) return;
+    current = next;
+    updateUI();
+  }
+
+  // 키보드 지원
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+      e.preventDefault();
+      changeSlide(1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      changeSlide(-1);
+    } else if (e.key === 'Home') {
+      current = 0; updateUI();
+    } else if (e.key === 'End') {
+      current = total - 1; updateUI();
+    }
+  });
+
+  // 터치 스와이프 지원
+  let touchX = 0;
+  document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) changeSlide(diff > 0 ? 1 : -1);
+  });
+
+  // 초기화
+  slides.forEach((s, i) => { if (i !== 0) s.style.display = 'none'; });
+  updateUI();
+</script>
+</body>
+</html>

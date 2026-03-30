@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스포츠과학이란?</title>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: rgba(16, 16, 26, 0.95);
+      --border: rgba(255, 255, 255, 0.07);
+      --accent: #00c896;
+      --accent2: #00a57a;
+      --text: #e8e8f0;
+      --text-sub: rgba(232, 232, 240, 0.55);
+      --gold: #f59e0b;
+      --r: 14px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* 배경 그라디언트 효과 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 10%, rgba(0, 200, 150, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 90%, rgba(0, 200, 150, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* 16:9 슬라이드 컨테이너 */
+    .slide {
+      width: min(1280px, 100vw);
+      height: min(720px, 56.25vw);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 28px 36px 24px;
+      gap: 14px;
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(0, 200, 150, 0.2);
+      flex-shrink: 0;
+    }
+
+    .header-badge {
+      background: var(--accent);
+      color: #000;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .header h1 {
+      font-size: clamp(22px, 2.8vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .header h1 span {
+      color: var(--accent);
+    }
+
+    .header-sub {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--text-sub);
+      text-align: right;
+      line-height: 1.5;
+    }
+
+    /* ── 상단 2칸 정의 박스 ── */
+    .def-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .def-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 14px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 화살표 느낌의 상단 강조선 */
+    .def-box::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .def-box.right::before {
+      background: linear-gradient(270deg, var(--accent), transparent);
+    }
+
+    .def-box-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .def-box-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(0, 200, 150, 0.15);
+    }
+
+    .def-box p {
+      font-size: clamp(11px, 1.1vw, 13.5px);
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .def-box p strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ── 화살표 연결 ── */
+    .arrow-connector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
+      height: 16px;
+    }
+
+    .arrow-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,200,150,0.3), transparent);
+    }
+
+    .arrow-down {
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 10px solid rgba(0, 200, 150, 0.4);
+    }
+
+    /* ── 중간 중요성/가치 박스 ── */
+    .value-box {
+      background: rgba(0, 200, 150, 0.06);
+      border: 1px solid rgba(0, 200, 150, 0.25);
+      border-radius: var(--r);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .value-box-label {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      white-space: nowrap;
+      writing-mode: horizontal-tb;
+    }
+
+    .value-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(0, 200, 150, 0.2);
+      flex-shrink: 0;
+    }
+
+    .value-items {
+      display: flex;
+      gap: 24px;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .value-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: clamp(11px, 1.05vw, 13px);
+    }
+
+    .value-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* ── 3P 원형 섹션 ── */
+    .three-p-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .p-circle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .p-circle {
+      width: min(130px, 13vw);
+      height: min(130px, 13vw);
+      border-radius: 50%;
+      background: var(--card);
+      border: 2px solid rgba(0, 200, 150, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 0 24px rgba(0, 200, 150, 0.08);
+    }
+
+    .p-circle::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 200, 150, 0.1);
+    }
+
+    .p-number {
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .p-en {
+      font-size: clamp(14px, 1.6vw, 20px);
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .p-ko {
+      font-size: clamp(10px, 1vw, 12px);
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+
+    .p-content {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      width: 100%;
+      flex: 1;
+    }
+
+    .p-content ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .p-content ul li {
+      font-size: clamp(10px, 1vw, 12px);
+      color: var(--text-sub);
+      line-height: 1.4;
+      padding-left: 12px;
+      position: relative;
+    }
+
+    .p-content ul li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* People 원 강조 */
+    .p-circle-wrap.highlight .p-circle {
+      border-color: var(--accent);
+      box-shadow: 0 0 32px rgba(0, 200, 150, 0.2);
+      background: rgba(0, 200, 150, 0.08);
+    }
+
+    .p-circle-wrap.highlight .p-en {
+      color: var(--accent);
+    }
+
+    .p-circle-wrap.highlight .p-content {
+      border-color: rgba(0, 200, 150, 0.2);
+      background: rgba(0, 200, 150, 0.04);
+    }
+
+    /* ── 푸터 ── */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .footer-text {
+      font-size: 10px;
+      color: rgba(232, 232, 240, 0.25);
+      letter-spacing: 0.05em;
+    }
+
+    .footer-tag {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 200, 150, 0.2);
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slide">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="header-badge">Sports Science</div>
+    <h1>스포츠과학이란 <span>무엇인가?</span></h1>
+    <div class="header-sub">
+      노인 건강 증진 프로그램<br>
+      발표자: ___________
+    </div>
+  </div>
+
+  <!-- 상단 2칸: 학술적 + 대중적 정의 -->
+  <div class="def-row">
+    <div class="def-box">
+      <div class="def-box-label">학술적 정의</div>
+      <p>
+        스포츠과학은 스포츠에 참여하는 모든 사람을 위해 다양한 학문을 기반으로
+        인간의 신체활동과 스포츠 수행능력을 <strong>과학적으로 연구</strong>하고,
+        이를 통해 <strong>삶의 질을 개선</strong>하고 신체적 탁월성을 고양하는 학문이다.
+      </p>
+    </div>
+    <div class="def-box right">
+      <div class="def-box-label">대중적 정의</div>
+      <p>
+        운동할 때 몸에서 어떤 일이 일어나는지를 이해하고,
+        운동을 더 잘하고 <strong>건강하게 할 수 있도록</strong> 도와주는 학문.
+        인체 원리를 과학적으로 분석하여 <strong>운동을 평생</strong> 할 수 있도록 하는 학문.
+      </p>
+    </div>
+  </div>
+
+  <!-- 화살표 -->
+  <div class="arrow-connector">
+    <div class="arrow-line"></div>
+    <div class="arrow-down"></div>
+    <div class="arrow-line"></div>
+  </div>
+
+  <!-- 중간: 중요성/가치/혜택 -->
+  <div class="value-box">
+    <div class="value-box-label">중요성 · 가치 · 혜택</div>
+    <div class="value-divider"></div>
+    <div class="value-items">
+      <div class="value-item">
+        <div class="value-dot"></div>
+        <span>과학적 근거 기반 맞춤 운동 처방</span>
+      </div>
+      <div class="value-item">
+        <div class="value-dot"></div>
+        <span>근감소증·낙상 위험 예방</span>
+      </div>
+      <div class="value-item">
+        <div class="value-dot"></div>
+        <span>건강수명 연장 및 자립 생활 지원</span>
+      </div>
+      <div class="value-item">
+        <div class="value-dot"></div>
+        <span>만성질환 관리 효과 입증</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 화살표 -->
+  <div class="arrow-connector">
+    <div class="arrow-line"></div>
+    <div class="arrow-down"></div>
+    <div class="arrow-line"></div>
+  </div>
+
+  <!-- 하단 3P 원형 -->
+  <div class="three-p-row">
+
+    <!-- Purpose -->
+    <div class="p-circle-wrap">
+      <div class="p-circle">
+        <div class="p-number">P1</div>
+        <div class="p-en">Purpose</div>
+        <div class="p-ko">목적</div>
+      </div>
+      <div class="p-content">
+        <ul>
+          <li>건강수명 연장 및 삶의 질 향상</li>
+          <li>낙상·골절 예방으로 자립 생활 유지</li>
+          <li>근감소증 억제 및 균형 능력 향상</li>
+          <li>만성질환 합병증 관리</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- People (핵심 타깃 강조) -->
+    <div class="p-circle-wrap highlight">
+      <div class="p-circle">
+        <div class="p-number">P2</div>
+        <div class="p-en">People</div>
+        <div class="p-ko">고객 산정</div>
+      </div>
+      <div class="p-content">
+        <ul>
+          <li>65세 이상 노인 (남·녀)</li>
+          <li>근력 저하·활동 감소를 경험하는 분</li>
+          <li>만성질환(고혈압·당뇨 등) 보유자</li>
+          <li>건강한 노화를 원하는 모든 어르신</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Place -->
+    <div class="p-circle-wrap">
+      <div class="p-circle">
+        <div class="p-number">P3</div>
+        <div class="p-en">Place</div>
+        <div class="p-ko">장소</div>
+      </div>
+      <div class="p-content">
+        <ul>
+          <li>지역사회 노인 복지관</li>
+          <li>노인 스포츠센터·생활체육관</li>
+          <li>재활·의료기관 연계 시설</li>
+          <li>요양원·실버타운 내 운동 공간</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 푸터 -->
+  <div class="footer">
+    <div class="footer-text">Sports Science for Healthy Aging · 2026</div>
+    <div class="footer-tag">
+      <div class="tag">노인 건강</div>
+      <div class="tag">3P 모델</div>
+      <div class="tag">스포츠과학</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
