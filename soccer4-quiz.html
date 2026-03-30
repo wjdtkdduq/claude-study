@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>제1회 축구 TMI 모의고사 — 축구4</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #071523;
+      --green:    #00d47e;
+      --purple:   #38003c;
+      --correct:  #00d47e;
+      --wrong:    #ff4040;
+      --card:     rgba(10, 24, 50, 0.97);
+      --border:   rgba(0, 212, 126, 0.18);
+      --text:     #ffffff;
+      --text-sub: rgba(255, 255, 255, 0.48);
+      --r-sm:     8px;
+      --r-lg:     14px;
+      --font:     -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      --font-hand: 'Gaegu', cursive; /* 손글씨 폰트 */
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 90% 40% at 50% -2%, rgba(0,212,126,0.08) 0%, transparent 50%),
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,212,126,0.025) 60px);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* PL 퍼플 상단 띠 */
+    .pl-bar {
+      background: var(--purple);
+      height: 5px;
+    }
+
+    /* 상단 네비 */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid rgba(0,212,126,0.1);
+    }
+
+    .back-btn {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s;
+    }
+
+    .back-btn:hover { color: var(--green); }
+
+    .topbar-logo {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      color: var(--green);
+      text-transform: uppercase;
+    }
+
+    /* 퀴즈 헤더 */
+    .quiz-header {
+      position: relative;
+      text-align: center;
+      padding: 32px 20px 28px;
+      overflow: hidden;
+    }
+
+    .quiz-ball-bg {
+      position: absolute;
+      right: -30px;
+      top: -20px;
+      width: 160px;
+      height: 160px;
+      opacity: 0.04;
+      pointer-events: none;
+    }
+
+    .quiz-header-eyebrow {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .quiz-header-title {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    /* 진행률 */
+    .progress-section {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 20px 20px;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    .progress-count {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .bar-track {
+      height: 5px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), #00ffaa);
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    /* 퀴즈 카드 */
+    .wrap {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      box-shadow:
+        0 4px 24px rgba(0,0,0,0.45),
+        0 0 0 1px rgba(255,255,255,0.03);
+      animation: fadeUp 0.22s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 카드 상단 그린 라인 */
+    .card-line {
+      height: 3px;
+      background: linear-gradient(90deg, var(--green), #00ffaa);
+    }
+
+    .card-body {
+      padding: 28px 28px 8px;
+    }
+
+    .q-num {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .q-text {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.55;
+      letter-spacing: -0.2px;
+      margin-bottom: 24px;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding-bottom: 24px;
+    }
+
+    .choice {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--r-sm);
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: var(--font);
+      text-align: left;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: background 0.1s, border-color 0.1s;
+    }
+
+    .choice:hover:not(:disabled) {
+      background: rgba(0,212,126,0.08);
+      border-color: rgba(0,212,126,0.28);
+    }
+
+    .choice:disabled { cursor: default; }
+
+    .choice.correct {
+      background: rgba(0,212,126,0.12);
+      border-color: rgba(0,212,126,0.45);
+      color: var(--green);
+    }
+
+    .choice.wrong {
+      background: rgba(255,64,64,0.10);
+      border-color: rgba(255,64,64,0.35);
+      color: #ff6060;
+    }
+
+    /* 등번호 스타일 라벨 */
+    .choice-lbl {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.07);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0;
+    }
+
+    .choice.correct .choice-lbl {
+      background: rgba(0,212,126,0.2);
+    }
+
+    .choice.wrong .choice-lbl {
+      background: rgba(255,64,64,0.18);
+    }
+
+    /* 해설 */
+    .explanation {
+      margin: 0 28px 20px;
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.7;
+      padding: 11px 14px;
+      background: rgba(0,212,126,0.06);
+      border-radius: var(--r-sm);
+      border-left: 2px solid var(--green);
+      display: none;
+    }
+
+    .explanation.show { display: block; }
+
+    /* 다음 버튼 */
+    .next-btn {
+      display: none;
+      width: calc(100% - 56px);
+      margin: 0 28px 28px;
+      padding: 13px;
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-weight: 800;
+      font-family: var(--font);
+      cursor: pointer;
+      letter-spacing: 0.03em;
+      transition: opacity 0.15s;
+    }
+
+    .next-btn:hover { opacity: 0.88; }
+    .next-btn.show { display: block; }
+
+    /* 결과 화면 */
+    .result-screen { display: none; }
+    .result-screen.show { display: block; }
+
+    .result-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45);
+      animation: fadeUp 0.25s ease;
+    }
+
+    .result-card-line {
+      height: 4px;
+      background: linear-gradient(90deg, var(--purple), var(--green), var(--purple));
+    }
+
+    .result-inner {
+      padding: 44px 32px 40px;
+    }
+
+    .result-emoji {
+      font-size: 56px;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .result-score {
+      font-size: 60px;
+      font-weight: 900;
+      letter-spacing: -3px;
+      margin-bottom: 4px;
+      line-height: 1;
+    }
+
+    .result-score .accent { color: var(--green); }
+
+    .result-grade {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .result-msg {
+      font-size: 13px;
+      color: var(--text-sub);
+      margin-bottom: 32px;
+    }
+
+    .restart-btn {
+      padding: 13px 44px;
+      background: var(--green);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 14px;
+      font-weight: 800;
+      font-family: var(--font);
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: opacity 0.15s;
+    }
+
+    .restart-btn:hover { opacity: 0.88; }
+  </style>
+</head>
+<body>
+
+  <div class="pl-bar"></div>
+
+  <nav class="topbar">
+    <a class="back-btn" href="soccer4.html">← 목록으로</a>
+    <span class="topbar-logo">⚽ 축구4</span>
+  </nav>
+
+  <!-- 퀴즈 헤더 -->
+  <div class="quiz-header">
+    <!-- 배경 축구공 -->
+    <svg class="quiz-ball-bg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="96" fill="white"/>
+      <polygon points="100,18 124,48 114,80 86,80 76,48" fill="#0a0a18"/>
+      <polygon points="100,18 76,48 53,36 62,10 100,4" fill="#0a0a18"/>
+      <polygon points="100,18 124,48 147,36 138,10 100,4" fill="#0a0a18"/>
+      <polygon points="76,48 53,36 33,60 44,90 72,92" fill="#0a0a18"/>
+      <polygon points="124,48 147,36 167,60 156,90 128,92" fill="#0a0a18"/>
+      <polygon points="86,80 72,92 76,120 102,130 112,110" fill="#0a0a18"/>
+      <polygon points="114,80 128,92 124,120 98,130 88,110" fill="#0a0a18"/>
+    </svg>
+
+    <p class="quiz-header-eyebrow">Football Quiz · Round 1</p>
+    <h2 class="quiz-header-title">축구 TMI 모의고사</h2>
+  </div>
+
+  <!-- 진행률 -->
+  <div class="progress-section">
+    <div class="progress-info">
+      <span class="progress-label">진행률</span>
+      <span class="progress-count" id="progressCount">1 / 10</span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill" id="barFill" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <!-- 퀴즈 뷰 -->
+  <div class="wrap" id="quizView">
+    <div class="card" id="qCard">
+      <div class="card-line"></div>
+      <div class="card-body">
+        <div class="q-num" id="qNum">문제 1</div>
+        <div class="q-text" id="qText"></div>
+        <div class="choices" id="choices"></div>
+      </div>
+      <div class="explanation" id="explanation"></div>
+      <button class="next-btn" id="nextBtn"></button>
+    </div>
+  </div>
+
+  <!-- 결과 화면 -->
+  <div class="wrap result-screen" id="resultScreen">
+    <div class="result-card">
+      <div class="result-card-line"></div>
+      <div class="result-inner">
+        <span class="result-emoji" id="rEmoji"></span>
+        <div class="result-score"><span class="accent" id="rScore"></span><span style="font-size:32px;opacity:.5"> / 10</span></div>
+        <div class="result-grade" id="rGrade"></div>
+        <div class="result-msg" id="rMsg"></div>
+        <button class="restart-btn" onclick="restart()">다시 도전</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const LABELS = ['A', 'B', 'C', 'D'];
+
+    const questions = [
+      {
+        q: '안토니(Antony)가 경기 중 자주 사용해 밈이 된 특기 동작은?',
+        choices: ['오버헤드 킥', '스핀/회전 드리블', '라보나 패스', '가위차기'],
+        answer: 1,
+        exp: '안토니는 공을 잡으면 습관적으로 제자리 스핀을 반복해 "안토니 회전 속도" 밈이 생겼습니다. 실제로 스핀만 하다 공을 빼앗기는 경우도 잦았죠.'
+      },
+      {
+        q: '조제 무리뉴가 2004년 첼시 감독 취임 기자회견에서 스스로를 뭐라 소개했나?',
+        choices: ['The Only One', 'The Special One', 'The Best One', 'The Chosen One'],
+        answer: 1,
+        exp: '"Please don\'t call me arrogant, but I\'m European champion and I think I\'m a special one." — 무리뉴, 2004년 첼시 취임 기자회견'
+      },
+      {
+        q: '잉글랜드에 귀화한 풀백 아론 완비사카(Aaron Wan-Bissaka)의 귀화 전 국적은?',
+        choices: ['나이지리아', '가나', '콩고민주공화국', '카메룬'],
+        answer: 2,
+        exp: '완비사카는 콩고민주공화국계 부모님 밑에서 태어났으며, 잉글랜드 국적을 선택해 U21 대표팀부터 성인 대표팀까지 활약했습니다.'
+      },
+      {
+        q: '프랭크 리베리 얼굴의 흉터는 어떻게 생겼나?',
+        choices: ['경기 중 상대 선수와 충돌', '어린 시절 교통사고', '유리 파편 상처', '화재 사고'],
+        answer: 1,
+        exp: '리베리는 2살 때 심각한 자동차 사고를 당해 얼굴에 여러 흉터가 생겼습니다. 이 흉터는 그의 트레이드마크가 됐습니다.'
+      },
+      {
+        q: '역대 최고 이적료(2017년 기준)를 기록한 선수는?',
+        choices: ['킬리안 음바페', '크리스티아누 호날두', '네이마르', '앙투안 그리즈만'],
+        answer: 2,
+        exp: '네이마르는 2017년 바르셀로나에서 PSG로 2억 2,200만 유로에 이적해 역대 최고 이적료 기록을 세웠습니다.'
+      },
+      {
+        q: '야야 투레가 생일 케이크 미지급에 섭섭해했던 2014 챔피언스리그 경기 상대팀은?',
+        choices: ['레알 마드리드', '바이에른 뮌헨', 'CSKA 모스크바', '레버쿠젠'],
+        answer: 2,
+        exp: '야야 투레의 에이전트 디미트리 셀루크가 CSKA 모스크바 원정 경기에서 클럽 측이 생일 케이크를 챙겨주지 않았다며 공개적으로 불만을 표했습니다.'
+      },
+      {
+        q: '커뮤니티에서 "축구 물리학자"로 불리는 전 첼시 미드필더는?',
+        choices: ['프랭크 램파드', '존 오비 미켈', '마이클 에시엔', '조 콜'],
+        answer: 1,
+        exp: '존 오비 미켈은 공을 잡으면 절대 빠르게 움직이지 않고 균형잡힌 자세만 유지하는 플레이 스타일로 "축구 물리학자" 밈이 생겼습니다.'
+      },
+      {
+        q: '필 존스(Phil Jones)가 전 세계 축구 팬에게 밈으로 유명해진 이유는?',
+        choices: ['화려한 개인기', '극도로 과장된 표정', '감독과의 공개 갈등', '예상치 못한 해트트릭'],
+        answer: 1,
+        exp: '필 존스는 경기 중 극도로 찌그러지거나 어이없는 표정이 자주 포착되어 "표정 밈의 대명사"가 됐습니다. 관련 짤이 수천 개에 달합니다.'
+      },
+      {
+        q: '즐라탄 이브라히모비치의 자서전 제목은?',
+        choices: ['Zlatan Speaks', 'I Am Zlatan', 'The Lion King', 'My Football Story'],
+        answer: 1,
+        exp: '즐라탄의 자서전은 "I Am Zlatan(나는 즐라탄이다)"으로, 그의 거침없는 자신감을 잘 담은 제목입니다. 2011년 출판 후 베스트셀러가 됐습니다.'
+      },
+      {
+        q: '에릭 칸토나가 1995년 기자회견에서 "갈매기가 어선을 따르는 이유"를 언급한 맥락은?',
+        choices: ['은퇴 선언 소감', 'FA컵 우승 인터뷰', '기자들의 질문에 대한 답변', '팀 동료에게 한 연설'],
+        answer: 2,
+        exp: '칸토나는 기자들의 질문에 "갈매기들이 어선을 따르는 것은 정어리를 던져줄 것이라 생각하기 때문입니다"라는 말만 남기고 퇴장해 역사적인 어록이 됐습니다.'
+      }
+    ];
+
+    const GRADES = [
+      { min: 9, emoji: '🏆', grade: '축구 신',     msg: '당신은 진정한 축구 TMI 마스터입니다!' },
+      { min: 7, emoji: '⚽', grade: '수준급 덕후', msg: '꽤 깊이 알고 있군요. 대단합니다!' },
+      { min: 5, emoji: '👟', grade: '평균 이상',   msg: '기본기는 있습니다. 좀 더 파봐요!' },
+      { min: 3, emoji: '📚', grade: '공부가 필요해', msg: '축구 TMI, 아직 갈 길이 멀었습니다.' },
+      { min: 0, emoji: '😅', grade: '입문자',      msg: '괜찮아요, 지금부터 배우면 됩니다!' },
+    ];
+
+    let idx = 0;
+    let score = 0;
+    let answered = false;
+
+    function render() {
+      const q = questions[idx];
+      const total = questions.length;
+
+      document.getElementById('progressCount').textContent = `${idx + 1} / ${total}`;
+      document.getElementById('barFill').style.width = `${((idx + 1) / total) * 100}%`;
+      document.getElementById('qNum').textContent = `문제 ${idx + 1}`;
+      document.getElementById('qText').textContent = q.q;
+
+      document.getElementById('choices').innerHTML = q.choices.map((c, i) =>
+        `<button class="choice" data-i="${i}" onclick="pick(${i})">
+          <span class="choice-lbl">${LABELS[i]}</span>${c}
+        </button>`
+      ).join('');
+
+      const expEl = document.getElementById('explanation');
+      expEl.className = 'explanation';
+      expEl.textContent = '';
+
+      document.getElementById('nextBtn').className = 'next-btn';
+      answered = false;
+    }
+
+    function pick(i) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[idx];
+      const btns = document.querySelectorAll('.choice');
+      btns.forEach(b => b.disabled = true);
+      btns[i].classList.add(i === q.answer ? 'correct' : 'wrong');
+      if (i !== q.answer) btns[q.answer].classList.add('correct');
+
+      if (i === q.answer) score++;
+
+      const expEl = document.getElementById('explanation');
+      expEl.textContent = q.exp;
+      expEl.classList.add('show');
+
+      const nextBtn = document.getElementById('nextBtn');
+      nextBtn.textContent = idx === questions.length - 1 ? '결과 보기' : '다음 문제 →';
+      nextBtn.classList.add('show');
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      if (idx < questions.length - 1) {
+        idx++;
+        const card = document.getElementById('qCard');
+        card.style.animation = 'none';
+        void card.offsetWidth;
+        card.style.animation = '';
+        render();
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      document.getElementById('quizView').style.display = 'none';
+      document.getElementById('barFill').style.width = '100%';
+      document.getElementById('progressCount').textContent = `${questions.length} / ${questions.length}`;
+
+      const g = GRADES.find(x => score >= x.min);
+      document.getElementById('rEmoji').textContent = g.emoji;
+      document.getElementById('rScore').textContent = score;
+      document.getElementById('rGrade').textContent = g.grade;
+      document.getElementById('rMsg').textContent = g.msg;
+      document.getElementById('resultScreen').classList.add('show');
+    }
+
+    function restart() {
+      idx = 0;
+      score = 0;
+      answered = false;
+      document.getElementById('resultScreen').classList.remove('show');
+      document.getElementById('quizView').style.display = 'block';
+      render();
+    }
+
+    render();
+  </script>
+</body>
+</html>

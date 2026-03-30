@@ -1,0 +1,14 @@
+{
+  "name": "plan-review-mcp",
+  "version": "1.0.0",
+  "description": "Gemini API를 사용하여 구현 계획을 리뷰하는 MCP 서버",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@google/generative-ai": "^0.21.0"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo view wjdtkdduq/claude-study)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Skill(update-config)",
+      "Bash(powershell -WindowStyle Hidden -NonInteractive -Command \"Add-Type -AssemblyName System.Windows.Forms; $n = New-Object System.Windows.Forms.NotifyIcon; $n.Icon = [System.Drawing.SystemIcons]::Information; $n.BalloonTipTitle = ''''Claude Code''''; $n.BalloonTipText = ''''Claude 응답 완료''''; $n.Visible = $true; $n.ShowBalloonTip\\(3000\\); [System.Media.SystemSounds]::Asterisk.Play\\(\\); Start-Sleep -Milliseconds 1500; $n.Dispose\\(\\)\")",
+      "Bash(echo \"종료 코드: $?\")",
+      "Bash(jq:*)",
+      "Bash(npm install:*)",
+      "Bash(claude mcp:*)",
+      "mcp__plan-review__review_plan",
+      "Bash(ls:*)",
+      "Bash(py --version)",
+      "Read(//usr/**)",
+      "Read(//usr/local/**)",
+      "Bash(\"/c/Users/wjdtk/AppData/Local/Microsoft/WindowsApps/python\" --version 2>&1)",
+      "Bash(cmd /c \"python --version\" 2>&1)",
+      "Bash(wc -l c:/claude/study/*.html)"
+    ]
+  }
+}

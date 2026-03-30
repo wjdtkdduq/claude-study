@@ -1,0 +1,1 @@
+- [todo2.html 아키텍처 설계](project_todo2_architecture.md) — 5-layer 패턴(State/Repository/Domain/View/Controller), D-Day 계산, 검색 하이라이트 XSS 처리 방식
